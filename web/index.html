@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Balatan LGU — Report a Facility Issue</title>
+  <meta name="theme-color" content="#0f2c47" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/icons/favicon.png" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <link rel="stylesheet" href="/vendor/leaflet/leaflet.css" />
+  <link rel="stylesheet" href="/css/styles.css" />
+  <script>
+    document.documentElement.dataset.theme = localStorage.getItem("balatan_theme") || "light";
+  </script>
+</head>
+<body>
+  <div class="install-banner" id="install-banner">
+    <span>Install the reporting app for faster access</span>
+    <button class="btn small" onclick="Balatan.triggerInstall('install-banner')">Install</button>
+  </div>
+
+  <header class="app-header">
+    <div class="logo">
+      <img src="/icons/Balatan-Logo.png" alt="Municipality of Balatan seal" />
+    </div>
+    <div>
+      <h1>Balatan Facility Reporting</h1>
+      <div class="sub">Municipal Engineering Office · Report and track infrastructure issues</div>
+    </div>
+    <div class="spacer"></div>
+    <button class="header-link icon-btn theme-toggle" id="theme-toggle" title="Switch theme">
+      <svg class="icon-sun" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+           stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="12" r="4"/>
+        <path d="M12 2v2M12 20v2M4.9 4.9l1.4 1.4M17.7 17.7l1.4 1.4M2 12h2M20 12h2M4.9 19.1l1.4-1.4M17.7 6.3l1.4-1.4"/></svg>
+    </button>
+    <button class="bell icon-btn" id="notif-bell" style="display:none;" title="Notifications">
+      <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+           stroke-linecap="round" stroke-linejoin="round"><path d="M6 8a6 6 0 0 1 12 0c0 7 3 9 3 9H3s3-2 3-9"/>
+        <path d="M10.3 21a1.94 1.94 0 0 0 3.4 0"/></svg>
+      <span class="bell-badge" style="display:none;"></span>
+    </button>
+    <button class="header-user-btn" id="header-user-btn" style="display:none;" title="Your profile">
+      <span class="avatar-circle" aria-hidden="true">
+        <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.8"
+             stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="8" r="4"/>
+          <path d="M4 21c0-4 4-6 8-6s8 2 8 6"/></svg>
+      </span>
+      <span class="header-user" id="header-user"></span>
+    </button>
+    <a class="header-link" href="#" id="logout-link" style="display:none;">Sign out</a>
+    <a class="header-link" href="/">Home</a>
+  </header>
+
+  <div class="notif-panel" id="notif-panel">
+    <h4>Notifications</h4>
+    <div class="notif-list"></div>
+  </div>
+
+  <div class="container">
+    <div class="tabs">
+      <button class="tab active" data-tab="report">Report an Issue</button>
+      <button class="tab" data-tab="track" id="tab-btn-track" style="display:none;">Track Reports</button>
+      <button class="tab" data-tab="community">Community Reports</button>
+    </div>
+
+    <!-- ===== SIGN-IN PROMPT (shown when not signed in) ===== -->
+    <section id="tab-auth" style="display:none;">
+      <div class="card" style="max-width:460px;margin:0 auto;text-align:center;">
+        <h2>Sign in to report an issue</h2>
+        <p class="hint">Reporting requires an account — as a resident, or as MEO/LGU staff —
+          so every report is tied to a real, reachable person. Browsing community reports
+          needs no account.</p>
+        <a class="btn block" href="/login" style="margin-top:16px;">Sign in / create account</a>
+        <p class="hint auth-note" style="margin-top:16px;text-align:left;">
+          <strong>Note on location access:</strong> browsers only share your location on a
+          secure page. Signing in works on the computer running the system
+          (<code>http://127.0.0.1:5000</code>) or via an HTTPS address — if you open the app
+          from another device over plain Wi-Fi (<code>http://192.168.…</code>), the browser
+          will refuse to share your location and sign-in will not proceed.</p>
+      </div>
+    </section>
+
+    <!-- ===== REPORT TAB ===== -->
+    <section id="tab-report">
+      <div class="card report-card">
+        <h2>Report a Municipal Engineering Office (MEO) issue</h2>
+        <p class="hint">Your report goes directly to the LGU's Municipal Engineering Office.
+          Fields marked <span class="req-mark">*</span> are required.</p>
+        <form id="report-form">
+
+          <fieldset class="form-fieldset" id="staff-toggle-fieldset" style="display:none;">
+            <legend>Reporting as</legend>
+            <div class="segmented" id="reporter-type-toggle" role="group" aria-label="Reporter type">
+              <button type="button" class="seg-btn active" data-value="resident">Resident</button>
+              <button type="button" class="seg-btn" data-value="staff">Municipal / LGU Staff</button>
+            </div>
+            <input type="hidden" name="reporter_type" id="f-reporter-type" value="resident" />
+            <div id="f-staff-office-wrap" style="display:none;margin-top:12px;">
+              <label>Office / Department <span class="req-mark">*</span></label>
+              <input type="text" name="staff_office" id="f-staff-office"
+                     placeholder="e.g. Municipal Engineering Office" />
+            </div>
+          </fieldset>
+
+          <label>Issue Category <span class="req-mark">*</span></label>
+          <select name="category" id="f-category" required></select>
+
+          <label>Facility / Infrastructure <span class="req-mark">*</span></label>
+          <select name="facility_type" id="f-facility" required></select>
+
+          <label>What is the problem? <span class="req-mark">*</span></label>
+          <input type="text" name="title" placeholder="e.g. Large pothole on main road" required />
+
+          <label>Description <span class="req-mark">*</span></label>
+          <textarea name="description" required placeholder="Describe the issue, how long it has been there, and any danger it poses."></textarea>
+
+          <label>Approximate residents affected</label>
+          <input type="number" name="affected_residents" id="f-affected" min="0" placeholder="e.g. 200" />
+          <p class="hint field-note" id="urgency-note">Urgency is automatically determined by the
+            LGU system based on the estimated number of affected residents — there is no manual
+            urgency selection.</p>
+
+          <label>Barangay <span class="req-mark">*</span></label>
+          <div class="combobox" id="barangay-combobox">
+            <input type="text" id="f-barangay-input" placeholder="Type or click to search the 17 barangays…"
+                   autocomplete="off" required />
+            <input type="hidden" name="barangay" id="f-barangay" />
+            <div class="combobox-list" id="barangay-list"></div>
+          </div>
+
+          <label>Address / Landmark <span class="req-mark">*</span></label>
+          <input type="text" name="address" id="f-address" placeholder="Nearest landmark or street" required />
+
+          <label>Location <span class="req-mark">*</span></label>
+          <div class="location-box">
+            <button type="button" class="btn secondary" id="locate-btn">
+              <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"
+                   stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/>
+                <path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11Z"/></svg>
+              Use my location
+            </button>
+            <div class="gps-status" id="gps-status">Location not set — tap "Use my location" or adjust the pin manually.</div>
+            <button type="button" class="link-btn" id="toggle-map-btn">Adjust pin on a map ▾</button>
+            <div id="map-wrap" style="display:none;">
+              <div id="report-map"></div>
+              <p class="map-hint">Drag the pin to the exact spot if needed.</p>
+            </div>
+          </div>
+
+          <label>Photos <span class="req-mark">*</span> — upload 1 to 5 photos</label>
+          <div class="photo-upload-box">
+            <input type="file" name="photos" id="f-photo" accept="image/*" capture="environment" multiple hidden />
+            <button type="button" class="btn secondary small" id="add-photo-btn">Add photo(s)</button>
+            <span class="hint photo-count-hint" id="photo-count-hint">No photos selected yet.</span>
+            <div id="photo-preview-list" class="photo-preview-list"></div>
+          </div>
+
+          <label>Contact for follow-up (optional)</label>
+          <input type="text" name="reporter_contact" placeholder="Defaults to your account email" />
+          <p class="hint" id="submitting-as" style="margin-top:6px;"></p>
+
+          <div id="turnstile-field" style="display:none;margin-top:16px;">
+            <label style="margin-top:0;">Verification</label>
+            <div id="turnstile-widget"></div>
+          </div>
+
+          <input type="hidden" name="latitude" id="f-lat" />
+          <input type="hidden" name="longitude" id="f-lng" />
+
+          <p class="hint" id="report-block-status" style="display:none;color:var(--c-red);"></p>
+
+          <button type="submit" class="btn block" id="submit-btn" style="margin-top:18px;">
+            Submit report
+          </button>
+        </form>
+      </div>
+    </section>
+
+    <!-- ===== TRACK REPORTS (signed-in resident's own reports only) ===== -->
+    <section id="tab-track" style="display:none;">
+      <div class="card">
+        <h2>Track Reports</h2>
+        <p class="hint">Everything you have personally reported, with live status. Newest first.</p>
+        <div class="report-list" id="my-reports"></div>
+      </div>
+    </section>
+
+    <!-- ===== COMMUNITY REPORTS (public browsing + signed-in participation) ===== -->
+    <section id="tab-community" style="display:none;">
+      <div class="card" style="margin-bottom:18px;">
+        <h2>Nearby Issues</h2>
+        <p class="hint">Open issues around your current location, closest first. If one of
+          them affects you too, press <strong>I am affected</strong> — community-backed
+          issues automatically rise in the LGU's priority ranking.</p>
+        <button class="btn secondary small" id="community-locate">Use my location</button>
+        <div class="gps-status" id="community-status" style="margin-top:10px;"></div>
+      </div>
+      <div class="report-list" id="community-list" style="margin-bottom:26px;"></div>
+
+      <div class="card" style="margin-bottom:18px;">
+        <h2>Recent Community Reports</h2>
+        <p class="hint">All reports submitted by residents and staff, newest first. Search by
+          reference number, keyword, or barangay.</p>
+        <div class="filters">
+          <div>
+            <label>Search</label>
+            <input type="text" id="track-search" placeholder="Reference, keyword, or barangay" />
+          </div>
+          <div style="flex:0;">
+            <label>&nbsp;</label>
+            <button class="btn" id="track-search-btn">Search</button>
+          </div>
+        </div>
+      </div>
+      <div class="report-list" id="public-reports"></div>
+    </section>
+  </div>
+
+  <!-- ===== PROFILE MODAL (opened from the header user name) ===== -->
+  <div class="modal-backdrop" id="profile-modal">
+    <div class="modal" id="profile-modal-content">
+      <button class="close-x" onclick="Balatan.__closeProfile()">×</button>
+      <h3>My profile</h3>
+      <form id="profile-form">
+        <label>Full name</label>
+        <input type="text" id="pf-name" required />
+        <div class="field-row">
+          <div>
+            <label>Mobile</label>
+            <input type="text" id="pf-contact" placeholder="09xx xxx xxxx" />
+          </div>
+          <div>
+            <label>Barangay</label>
+            <input type="text" id="pf-barangay" placeholder="e.g. Poblacion (Siramag)" />
+          </div>
+        </div>
+        <p class="hint" id="pf-email" style="margin-top:10px;"></p>
+        <div id="pf-account-status" class="account-status-box"></div>
+        <button type="submit" class="btn" style="margin-top:12px;">Save profile</button>
+      </form>
+      <h4 style="margin-top:22px;">Valid ID</h4>
+      <p class="hint" id="pf-id-hint"></p>
+      <form id="id-reupload-form">
+        <input type="file" id="pf-valid-id" accept="image/*" capture="environment" required />
+        <button type="submit" class="btn secondary" style="margin-top:10px;">Upload new ID photo</button>
+      </form>
+      <h4 style="margin-top:22px;">Change password</h4>
+      <form id="password-form">
+        <label>Current password</label>
+        <input type="password" id="cp-current" required />
+        <label>New password (at least 6 characters)</label>
+        <input type="password" id="cp-new" minlength="6" required />
+        <button type="submit" class="btn secondary" style="margin-top:14px;">Change password</button>
+      </form>
+    </div>
+  </div>
+
+  <div class="modal-backdrop" id="detail-modal">
+    <div class="modal" id="detail-content"></div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="/vendor/leaflet/leaflet.js"></script>
+  <script src="/js/common.js"></script>
+  <script src="/js/app.js"></script>
+</body>
+</html>

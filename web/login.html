@@ -1,0 +1,157 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Balatan LGU — Sign In</title>
+  <meta name="theme-color" content="#0f2c47" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/icons/favicon.png" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <link rel="stylesheet" href="/css/styles.css" />
+  <script>
+    document.documentElement.dataset.theme = localStorage.getItem("balatan_theme") || "light";
+  </script>
+</head>
+<body>
+  <header class="app-header">
+    <div class="logo">
+      <img src="/icons/Balatan-Logo.png" alt="Municipality of Balatan seal" />
+    </div>
+    <div>
+      <h1>Balatan Facility Reporting</h1>
+      <div class="sub">Municipality of Balatan · Resident &amp; Staff Sign In</div>
+    </div>
+    <div class="spacer"></div>
+    <a class="header-link" href="/">Back to portal</a>
+  </header>
+
+  <div class="container">
+    <div class="card" style="max-width:460px;margin:0 auto;">
+      <div class="pin-scene" aria-hidden="true">
+        <div class="pin-stage">
+          <div class="pin-ground"><span class="pulse"></span><span class="pulse p2"></span></div>
+          <span class="pin-shadow"></span>
+          <div class="pin-3d"><span class="pin-body"></span></div>
+        </div>
+      </div>
+
+      <div id="auth-login">
+        <h2>Sign in</h2>
+        <p class="hint">Sign in with your email. For your security, signing in is only
+          possible <strong>within the Municipality of Balatan</strong> — your device
+          will ask permission to check your location.</p>
+        <form id="login-form">
+          <label>Email</label>
+          <input type="email" id="login-email" placeholder="you@example.com" required />
+          <label>Password</label>
+          <input type="password" id="login-password" placeholder="Your password" required />
+          <button type="submit" class="btn block" id="login-btn" style="margin-top:16px;">Sign in</button>
+        </form>
+        <p class="hint" style="margin-top:14px;">No account yet?
+          <a href="#" id="show-register">Create one</a> — it only takes a minute.<br>
+          Can't get in? <a href="#" id="show-forgot">Forgot password</a></p>
+      </div>
+
+      <div id="auth-forgot" style="display:none;">
+        <h2>Reset your password</h2>
+        <p class="hint">Enter your account email and we'll send a <strong>6-digit
+          reset code</strong>.</p>
+        <form id="forgot-form">
+          <label>Email</label>
+          <input type="email" id="forgot-email" placeholder="you@example.com" required />
+          <button type="submit" class="btn block" id="forgot-btn" style="margin-top:16px;">Send reset code</button>
+        </form>
+        <p class="hint" style="margin-top:14px;"><a href="#" id="forgot-back">Back to sign in</a></p>
+      </div>
+
+      <div id="auth-reset" style="display:none;">
+        <h2>Enter the reset code</h2>
+        <p class="hint">We sent a 6-digit code to <strong id="reset-email"></strong>.
+          Enter it with your new password.</p>
+        <p class="hint" id="reset-demo-hint" style="display:none;">
+          <em>Demo setup note: no email service is configured, so the code is shown
+          in the black server window instead.</em></p>
+        <form id="reset-form">
+          <label>Reset code</label>
+          <input type="text" id="reset-code" inputmode="numeric" maxlength="6"
+                 pattern="[0-9]{6}" placeholder="123456" required
+                 style="letter-spacing:.35em;font-size:1.15rem;text-align:center;" />
+          <label>New password (at least 6 characters)</label>
+          <input type="password" id="reset-password" minlength="6" required />
+          <button type="submit" class="btn block" id="reset-btn" style="margin-top:16px;">Reset password</button>
+        </form>
+        <p class="hint" style="margin-top:14px;"><a href="#" id="reset-back">Back to sign in</a></p>
+      </div>
+
+      <div id="auth-register" style="display:none;">
+        <h2>Create your account</h2>
+        <p class="hint">One account lets you report issues and keep track of them — as a
+          resident or, when reporting on behalf of an MEO/LGU office, as staff.
+          Registration also requires you to be <strong>within Balatan</strong>.</p>
+        <form id="register-form">
+          <label>Full name *</label>
+          <input type="text" id="reg-name" placeholder="e.g. Juan Dela Cruz" required />
+          <label>Email *</label>
+          <input type="email" id="reg-email" placeholder="you@example.com" required />
+          <label>Password * (at least 6 characters)</label>
+          <input type="password" id="reg-password" minlength="6" required />
+          <div class="field-row">
+            <div>
+              <label>Mobile (optional)</label>
+              <input type="text" id="reg-contact" placeholder="09xx xxx xxxx" />
+            </div>
+            <div>
+              <label>Barangay (optional)</label>
+              <input type="text" id="reg-barangay" placeholder="e.g. Poblacion I" />
+            </div>
+          </div>
+          <label>Valid ID (photo) *</label>
+          <input type="file" id="reg-valid-id" accept="image/*" capture="environment" required />
+          <p class="hint">Used by the LGU to verify your identity before your
+            account can report issues.</p>
+          <button type="submit" class="btn block" id="register-btn" style="margin-top:16px;">Create account</button>
+        </form>
+        <p class="hint" style="margin-top:14px;">Already have an account?
+          <a href="#" id="show-login">Sign in</a></p>
+      </div>
+
+      <div id="auth-otp" style="display:none;">
+        <h2>Check your email</h2>
+        <p class="hint">We sent a <strong>6-digit verification code</strong> to
+          <strong id="otp-email"></strong>. Enter it below to finish creating
+          your account. The code is valid for 10 minutes.</p>
+        <p class="hint" id="otp-demo-hint" style="display:none;">
+          <em>Demo setup note: no email service is configured on this computer, so the
+          code is shown in the black server window instead. This is by design, not a
+          limitation — the system supports any SMTP email provider via configuration;
+          in offline demo mode it switches to console delivery so the sign-up flow
+          stays fully demonstrable without credentials.</em></p>
+        <form id="otp-form">
+          <label>Verification code</label>
+          <input type="text" id="otp-code" inputmode="numeric" autocomplete="one-time-code"
+                 maxlength="6" pattern="[0-9]{6}" placeholder="123456" required
+                 style="letter-spacing:.35em;font-size:1.15rem;text-align:center;" />
+          <button type="submit" class="btn block" id="otp-btn" style="margin-top:16px;">Verify &amp; create account</button>
+        </form>
+        <p class="hint" style="margin-top:14px;">Didn't get it? Check your spam folder, or
+          <a href="#" id="otp-resend">resend the code</a> ·
+          <a href="#" id="otp-back">start over</a></p>
+      </div>
+
+      <div class="gps-status" id="auth-status" style="margin-top:12px;"></div>
+      <p class="hint auth-note" style="margin-top:14px;">
+        <strong>Note on location access:</strong> browsers only share your location on a
+        secure page. Signing in works on the computer running the system
+        (<code>http://127.0.0.1:5000</code>) or via an HTTPS address — if you open the app
+        from another device over plain Wi-Fi (<code>http://192.168.…</code>), the browser
+        will refuse to share your location and sign-in will not proceed.</p>
+    </div>
+  </div>
+
+  <div id="toast"></div>
+
+  <script src="/js/common.js"></script>
+  <script src="/js/auth.js"></script>
+</body>
+</html>

@@ -1,0 +1,23 @@
+{
+  "name": "balatan-lgu",
+  "version": "1.0.0",
+  "description": "Balatan LGU — Municipal Facility Reporting, Maintenance Tracking, and Community Participation System (PWA + Node.js/Express/MySQL, MVC)",
+  "main": "server.js",
+  "scripts": {
+    "start": "node launcher.js",
+    "server": "node server.js",
+    "seed": "node launcher.js --seed",
+    "seed:reset": "node launcher.js --seed --reset"
+  },
+  "engines": {
+    "node": "20.x"
+  },
+  "dependencies": {
+    "bcryptjs": "^3.0.3",
+    "express": "^4.21.2",
+    "multer": "^2.0.2",
+    "mysql2": "^3.14.0",
+    "nodemailer": "^9.0.3",
+    "tesseract.js": "^5.1.1"
+  }
+}

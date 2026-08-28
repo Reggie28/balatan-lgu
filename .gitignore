@@ -1,0 +1,31 @@
+# Dependencies
+node_modules/
+
+# Bundled portable runtimes (shipped inside the distribution ZIP,
+# not tracked in git)
+runtime/
+
+# Runtime data — MySQL data directory and uploaded photos
+data/mysql/
+data/uploads/*
+!data/uploads/.gitkeep
+
+# Private uploads — resident valid-ID photos (personal documents, RA 10173).
+# Never tracked, even accidentally.
+data/private/
+
+# Downloaded OCR language data (tesseract.js) — fetched on first use, not
+# source.
+data/ocr-cache/
+
+# Environment secrets — this app currently reads config only from real
+# process env vars (no dotenv dependency), but ignore defensively in case a
+# .env is used for local/deployment convenience later. The template file
+# (placeholders only, no real secrets) stays tracked.
+.env
+.env.*
+!.env.example
+
+# OS noise
+Thumbs.db
+.DS_Store

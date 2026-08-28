@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>Balatan LGU — Municipal Facility Reporting System</title>
+  <meta name="theme-color" content="#0f2c47" />
+  <link rel="manifest" href="/manifest.webmanifest" />
+  <link rel="icon" href="/icons/favicon.png" />
+  <link rel="apple-touch-icon" href="/icons/icon-192.png" />
+  <link rel="stylesheet" href="/css/styles.css" />
+  <script>
+    // Apply the saved theme before first paint (no flash).
+    document.documentElement.dataset.theme = localStorage.getItem("balatan_theme") || "light";
+  </script>
+</head>
+<body class="landing">
+  <header class="app-header">
+    <div class="logo">
+      <img src="/icons/Balatan-Logo.png" alt="Municipality of Balatan seal" />
+    </div>
+    <div>
+      <h1>Balatan Facility Reporting</h1>
+      <div class="sub">Municipality of Balatan · Camarines Sur</div>
+    </div>
+    <div class="spacer"></div>
+    <button class="header-link theme-toggle" id="theme-toggle" title="Switch theme">◐</button>
+    <a class="header-link" href="/portal">Open the portal</a>
+  </header>
+
+  <!-- ============ HERO ============ -->
+  <section class="hero">
+    <div class="hero-inner">
+      <div class="hero-copy">
+        <p class="eyebrow reveal">Municipality of Balatan · Public service platform</p>
+        <h2 class="hero-title">
+          <span class="reveal">See a problem?</span>
+          <span class="reveal d1 accent-line">Report it where you stand.</span>
+        </h2>
+        <p class="hero-sub reveal d2">Broken streetlight, flooded road, leaking pipe —
+          pin it on the map with a photo and the LGU sees it instantly, prioritizes it
+          by community impact, and shows you every step until it's fixed.</p>
+        <div class="hero-ctas reveal d3">
+          <a class="btn cta-main" href="/portal">Report an issue</a>
+          <a class="btn secondary" href="/portal#track">Track a report</a>
+        </div>
+      </div>
+      <div class="hero-visual reveal d2" aria-hidden="true">
+        <div class="pin-scene hero-pin">
+          <div class="pin-stage">
+            <div class="pin-ground"><span class="pulse"></span><span class="pulse p2"></span></div>
+            <span class="pin-shadow"></span>
+            <div class="pin-3d"><span class="pin-body"></span></div>
+          </div>
+        </div>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ FEATURES ============ -->
+  <section class="land-section">
+    <p class="eyebrow reveal">What it does</p>
+    <h3 class="land-h reveal">One platform, the whole repair story</h3>
+    <div class="feature-grid">
+      <div class="feature-card reveal">
+        <div class="fc-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+               stroke-linecap="round" stroke-linejoin="round"><circle cx="12" cy="10" r="3"/>
+            <path d="M12 21s-7-6.5-7-11a7 7 0 0 1 14 0c0 4.5-7 11-7 11Z"/></svg>
+        </div>
+        <h4>Report with GPS &amp; photo</h4>
+        <p>Pin the exact spot on the map, attach up to 5 photos, done in a minute.
+          Geofenced sign-in keeps every report genuine and local.</p>
+      </div>
+      <div class="feature-card reveal d1">
+        <div class="fc-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+               stroke-linecap="round" stroke-linejoin="round"><path d="M8 6h13M8 12h13M8 18h13"/>
+            <path d="M3 6h.01M3 12h.01M3 18h.01"/></svg>
+        </div>
+        <h4>Track every step</h4>
+        <p>A public status timeline with notes and repair photos, tied to your
+          reference number — from first review through resolution.</p>
+      </div>
+      <div class="feature-card reveal d2">
+        <div class="fc-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+               stroke-linecap="round" stroke-linejoin="round"><path d="M16 21v-2a4 4 0 0 0-4-4H6a4 4 0 0 0-4 4v2"/>
+            <circle cx="9" cy="7" r="4"/><path d="M22 21v-2a4 4 0 0 0-3-3.87"/>
+            <path d="M16 3.13a4 4 0 0 1 0 7.75"/></svg>
+        </div>
+        <h4>Community participation</h4>
+        <p>Affected by an issue someone else reported? Press “I am affected” —
+          community-backed issues rise in priority automatically.</p>
+      </div>
+      <div class="feature-card reveal d3">
+        <div class="fc-icon">
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+               stroke-linecap="round" stroke-linejoin="round"><path d="M3 3v18h18"/>
+            <path d="m7 14 4-4 3 3 5-6"/></svg>
+        </div>
+        <h4>Data-driven MEO</h4>
+        <p>A Community Impact Index scores every issue; heatmaps and trend
+          forecasts help the MEO fix problems before they grow.</p>
+      </div>
+    </div>
+  </section>
+
+  <!-- ============ PORTALS ============ -->
+  <section class="land-section">
+    <p class="eyebrow reveal">Choose your door</p>
+    <h3 class="land-h reveal">Two portals, one system</h3>
+    <div class="portal-grid">
+      <a class="portal-card reveal" href="/portal">
+        <h4>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+               stroke-linecap="round" stroke-linejoin="round"><path d="m3 9 9-6 9 6"/><path d="M4 9v11h16V9"/>
+            <path d="M8 20v-7M12 20v-7M16 20v-7"/><path d="M2 20h20"/></svg>
+          Residents &amp; Staff
+        </h4>
+        <p>Report facility issues — as a resident or as municipal/LGU staff —
+          follow their progress, and join community participation.</p>
+        <span class="btn block" style="margin-top:14px;">Enter the Portal</span>
+      </a>
+      <div class="portal-card reveal d1">
+        <h4>
+          <svg viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="1.7"
+               stroke-linecap="round" stroke-linejoin="round"><path d="M4 21h16"/><path d="M5 21V9l7-5 7 5v12"/>
+            <path d="M9 21v-6h6v6"/><path d="M9 9h.01M12 9h.01M15 9h.01"/></svg>
+          MEO Administrators
+        </h4>
+        <p>Manage and validate reports, assign MEO teams, monitor residents, and
+          plan maintenance with analytics. Staff access uses a secure address
+          provided by the municipal ICT office — it is not linked publicly.</p>
+        <span class="hint" style="display:block;margin-top:14px;">Authorized personnel only</span>
+      </div>
+    </div>
+  </section>
+
+  <footer class="land-footer">
+    <p>Municipality of Balatan, Camarines Sur · Municipal Facility Reporting,
+      Maintenance Tracking, and Community Participation System</p>
+    <p class="hint">A Progressive Web App — install it from your browser for
+      one-tap access.</p>
+  </footer>
+
+  <div id="toast"></div>
+  <script src="/js/common.js"></script>
+  <script src="/js/landing.js"></script>
+</body>
+</html>
