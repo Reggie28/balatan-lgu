@@ -74,8 +74,8 @@ module.exports = {
   MYSQL_DATA_DIR,
 
   // --- Server ----------------------------------------------------------------
-  HOST: process.env.BALATAN_HOST || "127.0.0.1",
-  PORT: parseInt(process.env.BALATAN_PORT || "5000", 10),
+  HOST: process.env.BALATAN_HOST || "0.0.0.0",
+  PORT: parseInt(process.env.PORT || process.env.BALATAN_PORT || "5000", 10),
 
   // Standard Node convention. Unset (the default) behaves exactly as before
   // this flag existed — only an explicit NODE_ENV=production changes
