@@ -2,6 +2,7 @@
  * Report controller — public submission/tracking plus admin management.
  */
 const path = require("path");
+const fs = require("fs");
 const config = require("../config/config");
 const reportModel = require("../models/reportModel");
 const userModel = require("../models/userModel");
@@ -314,6 +315,54 @@ async function patch(req, res) {
     }
   }
 
+  // "Not in Scope" is a hard deletion, not a normal status update: the
+  // issue is outside the MEO's mandate entirely, so per the client's
+  // requirement the report is permanently removed from active records
+  // rather than just re-labeled. Handled as its own branch (not
+  // reportModel.updateReport()) because the row will not exist afterward —
+  // the resident is notified and the audit trail is written first, using
+  // the report's data from *before* deletion.
+  if (allowed.status === "not_in_scope") {
+    if (before.user_id) {
+      await notificationModel.notify(before.user_id, "not_in_scope",
+        `We regret to inform you that the reported issue (${before.reference}) is not ` +
+        "within the scope of the Municipal Engineering Office (MEO). Your report has " +
+        "therefore been classified as Not in Scope." +
+        (allowed.note ? ` ${allowed.note}` : ""), before.id);
+      const owner = await userModel.getUser(before.user_id);
+      if (owner) {
+        mailService.sendNotice(owner.email,
+          `Update on your report ${before.reference}`,
+          `Hello ${owner.name},\n\nYour report "${before.title}" (${before.reference}) has ` +
+          "been reviewed and classified as Not in Scope — it does not fall within the " +
+          "Municipal Engineering Office's mandate." +
+          (allowed.note ? `\n\nLGU note: ${allowed.note}` : "") +
+          "\n\n— Municipality of Balatan");
+      }
+    }
+    // Permanent audit trail: activity_log has no foreign key to reports, so
+    // this entry survives the report row's deletion below — unlike
+    // status_history, which cascades away with the row (see db.js SCHEMA).
+    await activityModel.log(req.session.name || "admin", "admin",
+      "report removed (not in scope)",
+      `${before.reference}: ${before.title} — barangay ${before.barangay || "—"}` +
+      (allowed.note ? ` — ${allowed.note}` : ""));
+
+    const result = await reportModel.deleteReport(before.id);
+    const uploadRoot = path.resolve(config.UPLOAD_DIR);
+    for (const p of (result ? result.photoPaths : [])) {
+      const abs = path.resolve(config.UPLOAD_DIR, p);
+      // Resolve first, then require the result to actually be inside
+      // uploadRoot (exact match or a real child path via the separator) —
+      // path.resolve() collapses any ".." segments before this check runs,
+      // so a traversal attempt can't slip past a plain startsWith(prefix).
+      if (abs === uploadRoot || abs.startsWith(uploadRoot + path.sep)) {
+        fs.unlink(abs, () => {}); // best-effort; missing files/errors are ignored
+      }
+    }
+    return res.json({ deleted: true, id: before.id, reference: before.reference });
+  }
+
   const updated = await reportModel.updateReport(req.params.id, allowed);
   const what = allowed.status ? `status set to ${allowed.status}`
     : allowed.note ? "note added" : "details updated";
@@ -411,16 +460,6 @@ async function patch(req, res) {
           `A fake-report flag on ${updated.reference} was corrected by the LGU. Any ` +
           "related suspension/restriction from it has been lifted.", updated.id);
       }
-    }
-
-    // "Not in Scope" — auto-notify the resident this isn't an MEO matter.
-    // Wording per the consultant's specified message text.
-    if (updated.status === "not_in_scope") {
-      await notificationModel.notify(updated.user_id, "not_in_scope",
-        `We regret to inform you that the reported issue (${updated.reference}) is not ` +
-        "within the scope of the Municipal Engineering Office (MEO). Your report has " +
-        "therefore been classified as Not in Scope." +
-        (allowed.note ? ` ${allowed.note}` : ""), updated.id);
     }
   }
 

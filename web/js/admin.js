@@ -776,11 +776,28 @@
         return toast("Nothing to save — change a field, add a note, or attach a photo first.", "error");
       }
 
+      // "Not in Scope" permanently deletes the report and its uploaded
+      // photos server-side — confirm first, since this cannot be undone.
+      const goingNotInScope = status === "not_in_scope" && status !== r.status;
+      if (goingNotInScope && !confirm(
+        "Mark this report as Not in Scope? This will permanently remove the report and " +
+        "its uploaded report photos from the active system. This action cannot be undone."
+      )) {
+        return;
+      }
+
       try {
         if (hasCoreUpdate) {
           const body = { status, urgency, note };
           if (!teamSel.disabled) body.assigned_team = teamSel.value;
-          await api("/api/reports/" + id, { method: "PATCH", json: body });
+          const result = await api("/api/reports/" + id, { method: "PATCH", json: body });
+          if (result && result.deleted) {
+            toast("Report marked Not in Scope and permanently removed", "success");
+            Balatan.__closeAdmin();
+            loadReports();
+            loadOverview();
+            return;
+          }
         }
         if (hasProgressUpdate) {
           const fd = new FormData();

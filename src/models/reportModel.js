@@ -190,6 +190,30 @@ async function isAffected(reportId, userId) {
   return rows.length > 0;
 }
 
+/**
+ * Permanently deletes a report and its report-specific database records —
+ * used only by the admin "Not in Scope" removal flow (reportController.patch()).
+ * report_photos and status_history are removed automatically via their
+ * ON DELETE CASCADE foreign key (see db.js SCHEMA); `affected` has no FK on
+ * report_id so it is deleted explicitly here. `offenses` is intentionally
+ * NOT touched — its FK is ON DELETE SET NULL, preserving fake-report offense
+ * history independent of any one report (and "Not in Scope" never records an
+ * offense in the first place). Returns the report's photo paths (report_photos
+ * + the legacy single `photo_path` column) so the caller can remove the
+ * physical files — this function only touches the database, never the
+ * filesystem.
+ */
+async function deleteReport(id) {
+  const report = await getReport(id);
+  if (!report) return null;
+  const photoPaths = new Set();
+  if (report.photo_path) photoPaths.add(report.photo_path);
+  for (const p of report.photos || []) photoPaths.add(p.photo_path);
+  await db.query("DELETE FROM affected WHERE report_id=?", [id]);
+  await db.query("DELETE FROM reports WHERE id=?", [id]);
+  return { report, photoPaths: [...photoPaths] };
+}
+
 async function allReports() {
   return listReports({});
 }
@@ -201,4 +225,4 @@ async function countReports() {
 
 module.exports = { utcnow, createReport, addReportPhotos, getReport, listReports,
   updateReport, getHistory, addProgress, toggleAffected, isAffected, allReports,
-  countReports };
+  countReports, deleteReport };
