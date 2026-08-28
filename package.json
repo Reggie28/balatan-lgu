@@ -4,7 +4,7 @@
   "description": "Balatan LGU — Municipal Facility Reporting, Maintenance Tracking, and Community Participation System (PWA + Node.js/Express/MySQL, MVC)",
   "main": "server.js",
   "scripts": {
-    "start": "node launcher.js",
+    "start": "node server.js",
     "server": "node server.js",
     "seed": "node launcher.js --seed",
     "seed:reset": "node launcher.js --seed --reset"
@@ -21,3 +21,4 @@
     "tesseract.js": "^5.1.1"
   }
 }
+
