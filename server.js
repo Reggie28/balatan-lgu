@@ -105,9 +105,7 @@ async function start() {
 
 module.exports = { createApp, start };
 
-if (require.main === module) {
-  start().catch((err) => {
-    console.error("Failed to start:", err.message);
-    process.exit(1);
-  });
-}
+start().catch((err) => {
+  console.error("Failed to start:", err.message);
+  process.exit(1);
+});
