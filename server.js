@@ -14,7 +14,6 @@ const db = require("./src/models/db");
 const apiRoutes = require("./src/routes/api");
 
 async function createApp() {
-  await db.initDb();
 
   const app = express();
   app.use(express.json());
@@ -64,6 +63,14 @@ async function createApp() {
 async function start() {
   const app = await createApp();
   await new Promise((resolve) => app.listen(config.PORT, config.HOST, resolve));
+
+  try {
+    await db.initDb();
+    console.log("Database initialized successfully.");
+  } catch (err) {
+    console.error("Database initialization failed:", err);
+  }
+
   console.log("=".repeat(64));
   console.log(" Balatan LGU — Municipal Facility Reporting System");
   console.log("=".repeat(64));
