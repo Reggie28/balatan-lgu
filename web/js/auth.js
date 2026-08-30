@@ -77,8 +77,6 @@
       if (res.otp_required) {
         // Sign-up step 2: confirm the emailed one-time passcode.
         document.getElementById("otp-email").textContent = res.email;
-        document.getElementById("otp-demo-hint").style.display =
-          res.delivery === "console" ? "" : "none";
         document.getElementById("otp-code").value = "";
         showAuthView("auth-otp");
         document.getElementById("otp-code").focus();
@@ -163,8 +161,6 @@
         email: document.getElementById("forgot-email").value.trim(),
       }});
       document.getElementById("reset-email").textContent = res.email;
-      document.getElementById("reset-demo-hint").style.display =
-        res.delivery === "console" ? "" : "none";
       showAuthView("auth-reset");
       document.getElementById("reset-code").focus();
     } catch (err) {

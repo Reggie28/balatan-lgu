@@ -69,9 +69,6 @@
         <h2>Enter the reset code</h2>
         <p class="hint">We sent a 6-digit code to <strong id="reset-email"></strong>.
           Enter it with your new password.</p>
-        <p class="hint" id="reset-demo-hint" style="display:none;">
-          <em>Demo setup note: no email service is configured, so the code is shown
-          in the black server window instead.</em></p>
         <form id="reset-form">
           <label>Reset code</label>
           <input type="text" id="reset-code" inputmode="numeric" maxlength="6"
@@ -121,12 +118,6 @@
         <p class="hint">We sent a <strong>6-digit verification code</strong> to
           <strong id="otp-email"></strong>. Enter it below to finish creating
           your account. The code is valid for 10 minutes.</p>
-        <p class="hint" id="otp-demo-hint" style="display:none;">
-          <em>Demo setup note: no email service is configured on this computer, so the
-          code is shown in the black server window instead. This is by design, not a
-          limitation — the system supports any SMTP email provider via configuration;
-          in offline demo mode it switches to console delivery so the sign-up flow
-          stays fully demonstrable without credentials.</em></p>
         <form id="otp-form">
           <label>Verification code</label>
           <input type="text" id="otp-code" inputmode="numeric" autocomplete="one-time-code"
@@ -140,12 +131,6 @@
       </div>
 
       <div class="gps-status" id="auth-status" style="margin-top:12px;"></div>
-      <p class="hint auth-note" style="margin-top:14px;">
-        <strong>Note on location access:</strong> browsers only share your location on a
-        secure page. Signing in works on the computer running the system
-        (<code>http://127.0.0.1:5000</code>) or via an HTTPS address — if you open the app
-        from another device over plain Wi-Fi (<code>http://192.168.…</code>), the browser
-        will refuse to share your location and sign-in will not proceed.</p>
     </div>
   </div>
 

@@ -116,6 +116,40 @@ h1, h2, h3, h4 { letter-spacing: -0.011em; color: var(--text); }
 }
 .avatar-circle svg { width: 15px; height: 15px; }
 
+/* Compact header for phones. The logo and its text sit in an unclassed
+   flex child (see .app-header markup) that — like any flex item — defaults
+   to min-width:auto, which stops it shrinking below its own text's natural
+   width and forces the whole header wider than the viewport; min-width:0
+   here is what actually lets it shrink and wrap/truncate instead. Height
+   switches from a fixed px value to min-height so wrapped content doesn't
+   get clipped, and trailing controls (theme toggle, bell, avatar, links)
+   wrap to a second line instead of overflowing when there isn't room. */
+@media (max-width: 640px) {
+  .app-header {
+    height: auto;
+    min-height: 56px;
+    padding: 8px 14px;
+    flex-wrap: wrap;
+    row-gap: 6px;
+  }
+  .app-header .logo {
+    width: 32px; height: 32px;
+  }
+  .app-header .logo svg { width: 18px; height: 18px; }
+  .app-header .logo + div {
+    min-width: 0;
+    overflow: hidden;
+  }
+  .app-header h1 {
+    font-size: .88rem;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+  .app-header .sub {
+    font-size: .68rem;
+    overflow: hidden; text-overflow: ellipsis; white-space: nowrap;
+  }
+}
+
 /* ---------- Layout ---------- */
 .container { max-width: 1220px; margin: 0 auto; padding: 24px 22px 48px; }
 .grid { display: grid; gap: 18px; }
