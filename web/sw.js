@@ -1,7 +1,7 @@
 /* Service worker for the Balatan LGU PWA.
    Caches the app shell + vendored libraries for offline / fast loading.
    API calls (/api/*, /uploads/*) always go to the network. */
-const CACHE = "balatan-lgu-v23";
+const CACHE = "balatan-lgu-v24";
 const SHELL = [
   "/",
   "/portal",

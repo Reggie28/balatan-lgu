@@ -699,7 +699,11 @@
     try {
       const params = new URLSearchParams();
       if (q) params.set("q", q);
-      const reports = await api("/api/reports?" + params.toString());
+      // Deliberately anonymous: this list must never pick up a lingering
+      // admin token from the same browser (see Balatan.api's anonymous
+      // option) — otherwise an admin's own browser would see confirmed-fake
+      // reports here that a resident/public visitor correctly never would.
+      const reports = await api("/api/reports?" + params.toString(), { anonymous: true });
       if (!reports.length) { list.innerHTML = `<div class="empty">No reports found.</div>`; return; }
       list.innerHTML = reports.map(publicCard).join("");
       list.querySelectorAll(".report-item").forEach((el) =>

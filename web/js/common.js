@@ -5,14 +5,18 @@ window.Balatan = (function () {
   async function api(path, opts = {}) {
     const headers = opts.headers || {};
     // Admin token by default; pages may pass their own Authorization header
-    // (the resident portal uses a separate token).
-    const token = localStorage.getItem("balatan_token");
+    // (the resident portal uses a separate token). Pass anonymous:true for a
+    // call that must stay genuinely public regardless of what's in
+    // localStorage — e.g. a request made from an admin's own browser must
+    // not silently pick up their admin token and see admin-only data.
+    const token = opts.anonymous ? null : localStorage.getItem("balatan_token");
     if (token && !headers["Authorization"]) headers["Authorization"] = "Bearer " + token;
     if (opts.json !== undefined) {
       headers["Content-Type"] = "application/json";
       opts.body = JSON.stringify(opts.json);
       delete opts.json;
     }
+    delete opts.anonymous; // not a fetch() option
     const res = await fetch(API + path, { ...opts, headers });
     if (res.status === 204) return null;
     const ct = res.headers.get("content-type") || "";
