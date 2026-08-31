@@ -73,6 +73,18 @@ window.Balatan = (function () {
     if ("serviceWorker" in navigator) {
       window.addEventListener("load", () =>
         navigator.serviceWorker.register("/sw.js").catch(() => {}));
+      // skipWaiting()+clients.claim() in sw.js hand control of this tab to a
+      // new version immediately, but they don't replace JS already loaded in
+      // memory -- a tab left open since before a deploy would otherwise keep
+      // running old code (e.g. an old app.js) indefinitely. Reload once, the
+      // first time a new service worker actually takes over, so a deployed
+      // fix reaches already-open tabs instead of silently sitting stale.
+      let reloadedForNewSW = false;
+      navigator.serviceWorker.addEventListener("controllerchange", () => {
+        if (reloadedForNewSW) return;
+        reloadedForNewSW = true;
+        window.location.reload();
+      });
     }
   }
 
