@@ -786,6 +786,19 @@
         return;
       }
 
+      // "Fake" keeps the report and its offense/history record, but removes
+      // it from the active report list (same idea as Not in Scope, minus the
+      // deletion) — confirm first so the admin knows it'll disappear from
+      // this list, not just change status in place.
+      const goingFake = status === "fake" && status !== r.status;
+      if (goingFake && !confirm(
+        "Mark this report as Fake? This will remove the report from the active report list. " +
+        "The report record will be retained for offense/history purposes. This action cannot " +
+        "be undone unless an administrator reverses the fake classification."
+      )) {
+        return;
+      }
+
       try {
         if (hasCoreUpdate) {
           const body = { status, urgency, note };
@@ -793,6 +806,13 @@
           const result = await api("/api/reports/" + id, { method: "PATCH", json: body });
           if (result && result.deleted) {
             toast("Report marked Not in Scope and permanently removed", "success");
+            Balatan.__closeAdmin();
+            loadReports();
+            loadOverview();
+            return;
+          }
+          if (goingFake) {
+            toast("Report marked Fake and removed from the active list", "success");
             Balatan.__closeAdmin();
             loadReports();
             loadOverview();

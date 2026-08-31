@@ -254,13 +254,17 @@ async function list(req, res) {
   scoreAll(reports, all);
   const session = auth.sessionFromRequest(req);
   // Confirmed-fake reports are no longer an active municipal issue and must
-  // not appear as one in public/resident-facing browsing (Community Reports,
-  // Nearby Issues). Admins still see them here — Manage Reports needs to
-  // review and, if needed, reverse a fake flag. The fake-report offense
-  // record itself is untouched by this filter; it only affects what this
-  // listing endpoint returns.
+  // not clutter the normal active-report listing anywhere — including the
+  // admin's own default Manage Reports view, matching how Not in Scope
+  // reports disappear from the active list. This never touches the fake-
+  // report offense record itself, only what this listing endpoint returns.
+  // An admin can still deliberately reach them by filtering the existing
+  // status dropdown to "Fake" (needed for enforcement review/reversal, e.g.
+  // undoing a mistaken flag); residents/public can never see them, filter
+  // or not.
   const isAdmin = session && session.role === "admin";
-  if (!isAdmin) reports = reports.filter((r) => r.status !== "fake");
+  const wantsFakeExplicitly = isAdmin && filters.status === "fake";
+  if (!wantsFakeExplicitly) reports = reports.filter((r) => r.status !== "fake");
   for (const r of reports) shapeReporterInfo(r, session);
   res.json(reports);
 }
