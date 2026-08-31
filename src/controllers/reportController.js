@@ -249,10 +249,18 @@ async function list(req, res) {
   for (const key of ["status", "urgency", "facility_type", "category", "q"]) {
     if (req.query[key]) filters[key] = req.query[key];
   }
-  const reports = await reportModel.listReports(filters);
+  let reports = await reportModel.listReports(filters);
   const all = await reportModel.allReports();
   scoreAll(reports, all);
   const session = auth.sessionFromRequest(req);
+  // Confirmed-fake reports are no longer an active municipal issue and must
+  // not appear as one in public/resident-facing browsing (Community Reports,
+  // Nearby Issues). Admins still see them here — Manage Reports needs to
+  // review and, if needed, reverse a fake flag. The fake-report offense
+  // record itself is untouched by this filter; it only affects what this
+  // listing endpoint returns.
+  const isAdmin = session && session.role === "admin";
+  if (!isAdmin) reports = reports.filter((r) => r.status !== "fake");
   for (const r of reports) shapeReporterInfo(r, session);
   res.json(reports);
 }
